@@ -1,5 +1,4 @@
 import math
-import js2py
 from datetime import datetime
 from dash import dcc, html, Input, Output, State
 import pandas as pd
@@ -11,29 +10,15 @@ from .widget import Widget
 
 class TemperatureEvolutionWidget(Widget):
     GRAPH_ID = "temperature-evolution-graph"
-    _tailwind_config: dict = {}
-
-    def _load_tailwind_config(self) -> None:
-        if not self._tailwind_config:
-            try:
-                context = js2py.EvalJs()
-                with open("assets/tailwind-config.js", "r") as f:
-                    js_code = f.read().replace("tailwind.config =", "tailwind_config =")
-                    context.execute(js_code)
-                self._tailwind_config = context["tailwind_config"].to_dict()
-            except Exception as e:
-                print(f"Error loading Tailwind config: {e}")
-                self._tailwind_config = {}
 
     def layout(self) -> html.Div:
         """Returns the layout of the temperature evolution widget."""
         self._load_tailwind_config()
-        primary_color = (
-            self._tailwind_config.get("theme", {})
-            .get("extend", {})
-            .get("colors", {})
-            .get("primary", "#FFFFFF")
+        colors = (
+            self._tailwind_config.get("theme", {}).get("extend", {}).get("colors", {})
         )
+        primary_color = colors.get("primary", "#FFFFFF")
+        accent_color = colors.get("accent", "#FFFFFF")
 
         return super()._create_layout(
             dcc.Graph(
@@ -59,7 +44,7 @@ class TemperatureEvolutionWidget(Widget):
                             x=[datetime.now(), datetime.now()],
                             y=[-1, 1],
                             mode="lines",
-                            line=dict(color="rgb(255, 0, 0)", width=2, dash="dash"),
+                            line=dict(color=accent_color, width=2, dash="dash"),
                             showlegend=False,
                         ),
                     ],
