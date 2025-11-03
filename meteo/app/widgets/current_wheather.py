@@ -94,8 +94,6 @@ class CurrentWeatherWidget(Widget):
         )
 
     def setup_callbacks(self, app: Dash) -> None:
-        print("Setting up callbacks for CurrentWeatherWidget")
-
         @app.callback(
             Output(defs.LAST_UPDATED_ID, "data"),
             Output("current-temperature", "children"),
@@ -106,7 +104,6 @@ class CurrentWeatherWidget(Widget):
             Input("current-weather-interval", "n_intervals"),
         )
         def update_current_weather(n_intervals: int):
-            print(f"Updating current weather data... (interval {n_intervals})")
             current_weather_data = self.config.forecast.fetch_current_weather()
             daily_weather_data = self.config.forecast.fetch_daily_weather()
             uv_risk = UvRisk.from_index(daily_weather_data.uv_index_max)

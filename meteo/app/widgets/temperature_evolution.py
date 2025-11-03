@@ -28,7 +28,6 @@ class TemperatureEvolutionWidget(Widget):
     def layout(self) -> html.Div:
         """Returns the layout of the temperature evolution widget."""
         self._load_tailwind_config()
-        print("Tailwind config loaded:", self._tailwind_config)
         primary_color = (
             self._tailwind_config.get("theme", {})
             .get("extend", {})
@@ -99,7 +98,6 @@ class TemperatureEvolutionWidget(Widget):
             State(self.GRAPH_ID, "figure"),
         )
         def update_temperature_graph(n_intervals, existing_figure):
-            print(f"Updating temperature evolution graph... (interval {n_intervals})")
             forecast = self.config.forecast
             hourly_data = forecast.fetch_hourly_weather(past_days=1, forecast_days=1)
             # print(hourly_data[0:5])  # Print first 5 entries for debugging
