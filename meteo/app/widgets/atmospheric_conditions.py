@@ -125,5 +125,5 @@ class AtmosphericConditionsWidgets(Widget):
                     label="Pressure", value="1000", unit="hectopascals", icon=rising
                 ),
             ],
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-transparent border-0",
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-transparent border-0",
         )

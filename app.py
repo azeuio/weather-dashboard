@@ -98,7 +98,10 @@ widgets = [
     AtmosphericConditionsWidgets(global_config),
     TemperatureEvolutionWidget(global_config),
 ]
-app.layout = html.Div(children=[header, *[widget.layout() for widget in widgets]])
+app.layout = html.Div(
+    className="flex flex-col gap-6",
+    children=[header, *[widget.layout() for widget in widgets]],
+)
 
 for widget in widgets:
     if not isinstance(widget, Widget):

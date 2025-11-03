@@ -4,7 +4,7 @@ import datetime
 from meteo import defs
 from meteo.conditions import WeatherDescription, UvRisk
 from meteo.forecast import Forecast
-from dash import Input, Output, html, Dash, dcc
+from dash import Input, Output, html, Dash
 from .widget import Widget
 
 
@@ -90,7 +90,7 @@ class CurrentWeatherWidget(Widget):
                     ),
                 ],
             ),
-            className=f"rounded-2xl p-6 md:p-8 mb-6 {className}",
+            className=f"rounded-2xl p-6 md:p-8 {className}",
         )
 
     def setup_callbacks(self, app: Dash) -> None:
