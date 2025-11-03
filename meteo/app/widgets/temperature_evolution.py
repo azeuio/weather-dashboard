@@ -24,6 +24,11 @@ class TemperatureEvolutionWidget(Widget):
             dcc.Graph(
                 id=self.GRAPH_ID,
                 className="graph-container",
+                config={
+                    "displayModeBar": False,
+                    "responsive": False,
+                    "staticPlot": True,
+                },
                 figure={
                     "data": [
                         go.Scatter(
