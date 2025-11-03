@@ -152,7 +152,7 @@ class Forecast:
 
     @dataclasses.dataclass
     class DailyWeather:
-        date: str = ""
+        date: datetime.date = datetime.date.today()
         temperature_max: float = 0.0
         temperature_min: float = 0.0
         weather_code: int = 0
@@ -160,8 +160,12 @@ class Forecast:
         sunset: str = ""
         uv_index_max: float = 0.0
         uv_index_clear_sky_max: float = 0.0
+        precipitation_probability: float = 0.0
+        unit: Literal["C", "F"] = "C"
 
-    def fetch_daily_weather(self, farenheit: bool = False):
+    def fetch_daily_weather(
+        self, farenheit: bool = False, past_days: int = 0, forecast_days: int = 1
+    ) -> list["Forecast.DailyWeather"]:
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
             "latitude": 52.52,
@@ -174,7 +178,10 @@ class Forecast:
                 "sunset",
                 "uv_index_max",
                 "uv_index_clear_sky_max",
+                "precipitation_probability_max",
             ],
+            "past_days": past_days,
+            "forecast_days": forecast_days,
             "temperature_unit": "fahrenheit" if farenheit else "celsius",
         }
         responses = self.openmeteo.weather_api(url, params=params)
@@ -182,16 +189,22 @@ class Forecast:
         daily = response.Daily()
         if not daily:
             return self.DailyWeather()
-        return self.DailyWeather(
-            date=datetime.datetime.now().strftime("%Y-%m-%d"),
-            temperature_max=daily.Variables(0).ValuesAsNumpy()[0],
-            temperature_min=daily.Variables(1).ValuesAsNumpy()[0],
-            weather_code=daily.Variables(2).ValuesAsNumpy()[0],
-            sunrise=daily.Variables(3).ValuesInt64AsNumpy()[0],
-            sunset=daily.Variables(4).ValuesInt64AsNumpy()[0],
-            uv_index_max=daily.Variables(5).ValuesAsNumpy()[0],
-            uv_index_clear_sky_max=daily.Variables(6).ValuesAsNumpy()[0],
-        )
+        start = datetime.datetime.now().date() - datetime.timedelta(days=past_days)
+        return [
+            self.DailyWeather(
+                date=start + datetime.timedelta(days=i),
+                temperature_max=daily.Variables(0).ValuesAsNumpy()[i],
+                temperature_min=daily.Variables(1).ValuesAsNumpy()[i],
+                weather_code=daily.Variables(2).ValuesAsNumpy()[i],
+                sunrise=daily.Variables(3).ValuesInt64AsNumpy()[i],
+                sunset=daily.Variables(4).ValuesInt64AsNumpy()[i],
+                uv_index_max=daily.Variables(5).ValuesAsNumpy()[i],
+                uv_index_clear_sky_max=daily.Variables(6).ValuesAsNumpy()[i],
+                precipitation_probability=daily.Variables(7).ValuesAsNumpy()[i],
+                unit="F" if farenheit else "C",
+            )
+            for i in range(daily.Variables(0).ValuesAsNumpy().shape[0])
+        ]
 
     @dataclasses.dataclass
     class HourlyWeather:

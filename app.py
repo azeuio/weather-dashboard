@@ -8,7 +8,12 @@ from datetime import datetime
 from meteo.app.widgets.temperature_evolution import TemperatureEvolutionWidget
 from meteo.extensions import babel, get_locale
 from meteo import defs
-from meteo.app.widgets import AtmosphericConditionsWidgets, CurrentWeatherWidget, Widget
+from meteo.app.widgets import (
+    AtmosphericConditionsWidgets,
+    CurrentWeatherWidget,
+    DailyForecastWidget,
+    Widget,
+)
 from meteo.forecast.forecast import Forecast
 
 # Sample data
@@ -89,6 +94,11 @@ header = html.Header(
             interval=defs.WEATHER_UPDATE_INTERVAL_MS,
             n_intervals=0,
         ),
+        dcc.Interval(
+            id=defs.LONG_FORECAST_INTERVAL_ID,
+            interval=defs.LONG_FORECAST_INTERVAL_MS,
+            n_intervals=0,
+        ),
     ],
 )
 
@@ -97,6 +107,7 @@ widgets = [
     CurrentWeatherWidget(global_config),
     AtmosphericConditionsWidgets(global_config),
     TemperatureEvolutionWidget(global_config),
+    DailyForecastWidget(global_config),
 ]
 app.layout = html.Div(
     className="flex flex-col gap-6",

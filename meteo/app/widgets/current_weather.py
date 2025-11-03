@@ -54,7 +54,7 @@ class CurrentWeatherWidget(Widget):
         """Returns the layout of the current weather widget."""
         forecast = self.config.forecast
         current_weather_data = forecast.fetch_current_weather()
-        daily_weather_data = forecast.fetch_daily_weather()
+        daily_weather_data = forecast.fetch_daily_weather(forecast_days=1)[0]
         uv_risk = UvRisk.from_index(daily_weather_data.uv_index_max)
 
         return self._create_layout(
@@ -105,7 +105,7 @@ class CurrentWeatherWidget(Widget):
         )
         def update_current_weather(n_intervals: int):
             current_weather_data = self.config.forecast.fetch_current_weather()
-            daily_weather_data = self.config.forecast.fetch_daily_weather()
+            daily_weather_data = self.config.forecast.fetch_daily_weather()[0]
             uv_risk = UvRisk.from_index(daily_weather_data.uv_index_max)
 
             temperature = f"{round(current_weather_data.temperature, 1)}°{current_weather_data.unit.upper()}"
