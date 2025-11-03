@@ -1,13 +1,11 @@
 from gettext import gettext
 import dash
 from dash import html, dcc
-from dash import State
 from dash.dependencies import Input, Output
 from flask import Flask
-import plotly.express as px
-import pandas as pd
 from datetime import datetime
 
+from meteo.app.widgets.temperature_evolution import TemperatureEvolutionWidget
 from meteo.extensions import babel, get_locale
 from meteo import defs
 from meteo.app.widgets import AtmosphericConditionsWidgets, CurrentWeatherWidget, Widget
@@ -98,6 +96,7 @@ global_config = Widget.Config(app, forecast=forecast)
 widgets = [
     CurrentWeatherWidget(global_config),
     AtmosphericConditionsWidgets(global_config),
+    TemperatureEvolutionWidget(global_config),
 ]
 app.layout = html.Div(children=[header, *[widget.layout() for widget in widgets]])
 
@@ -130,23 +129,6 @@ def update_last_updated(last_updated: int, n_intervals: int) -> str:
     if hours < 24:
         return gettext(f"{hours} hour(s) ago")
     return gettext(f"{hours // 24} day(s) ago")
-
-
-# # Define callback to update output
-# @app.callback(
-#     Output(defs.SLIDER_OUTPUT_ID, "children"), Input(defs.INTERVAL_ID, "interval")
-# )
-# def update_output(value):
-#     if value <= 60_000:
-#         value = f"{value // 1000} seconds"
-#     else:
-#         value = f"{value // 1000 // 60} minutes"
-#     return f"You have selected {value}"
-
-
-# @app.callback(Output(defs.INTERVAL_ID, "interval"), Input(defs.SLIDER_ID, "value"))
-# def update_intervals(value):
-#     return max(value * 1000 * 60, 1000 * 5)  # convert minutes to milliseconds
 
 
 if __name__ == "__main__":

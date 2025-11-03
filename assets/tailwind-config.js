@@ -6,7 +6,7 @@ tailwind.config = {
             foreground: '#ededed',
             card: '#141414',
             'card-foreground': '#ededed',
-            primary: '#3b82f6',
+            primary: '#34b4eb',
             'primary-foreground': '#ffffff',
             secondary: '#1f1f1f',
             'secondary-foreground': '#a3a3a3',

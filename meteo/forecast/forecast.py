@@ -192,3 +192,38 @@ class Forecast:
             uv_index_max=daily.Variables(5).ValuesAsNumpy()[0],
             uv_index_clear_sky_max=daily.Variables(6).ValuesAsNumpy()[0],
         )
+
+    @dataclasses.dataclass
+    class HourlyWeather:
+        time: datetime.datetime = datetime.datetime.now()
+        temperature_2m: float = 0.0
+        weather_code: int = 0
+        precipitation_probability: float = 0.0
+
+    def fetch_hourly_weather(
+        self, farenheit: bool = False, past_days: int = 0, forecast_days: int = 1
+    ) -> list["Forecast.HourlyWeather"]:
+        url = "https://api.open-meteo.com/v1/forecast"
+        params = {
+            "latitude": 52.52,
+            "longitude": 13.41,
+            "hourly": ["temperature_2m", "weather_code", "precipitation_probability"],
+            "past_days": past_days,
+            "forecast_days": forecast_days,
+            "temperature_unit": "fahrenheit" if farenheit else "celsius",
+        }
+        responses = self.openmeteo.weather_api(url, params=params)
+        response = responses[0]
+        hourly = response.Hourly()
+        if not hourly:
+            return []
+        start = datetime.datetime.now().replace(
+            minute=0, second=0, microsecond=0
+        ) - datetime.timedelta(hours=past_days * 24)
+        return [
+            self.HourlyWeather(
+                time=start + datetime.timedelta(hours=i),
+                temperature_2m=hourly.Variables(0).ValuesAsNumpy()[i],
+            )
+            for i in range(hourly.Variables(0).ValuesAsNumpy().shape[0])
+        ]
